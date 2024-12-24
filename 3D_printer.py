@@ -27,11 +27,10 @@ def optimize_printing(print_jobs: List[Dict], constraints: Dict) -> Dict:
     Returns:
         Dict з порядком друку та загальним часом
     """
-    # Перетворення вхідних даних у список об'єктів PrintJob
+
     jobs = [PrintJob(**job) for job in print_jobs]
 
-    # Сортування за пріоритетом (1 - найвищий) та часом друку (чим менше, тим краще)
-    jobs.sort(key=lambda job: (job.priority, job.print_time))
+    jobs.sort(key=lambda job: (job.priority))
 
     max_volume = constraints["max_volume"]
     max_items = constraints["max_items"]
@@ -45,7 +44,6 @@ def optimize_printing(print_jobs: List[Dict], constraints: Dict) -> Dict:
         current_group = []
         max_group_time = 0
 
-        # Формування групи моделей для одночасного друку
         for job in jobs[:]:
             if (current_volume + job.volume <= max_volume) and (
                 current_items + 1 <= max_items
@@ -56,7 +54,6 @@ def optimize_printing(print_jobs: List[Dict], constraints: Dict) -> Dict:
                 max_group_time = max(max_group_time, job.print_time)
                 jobs.remove(job)
 
-        # Додавання завдань групи до порядку друку
         print_order.extend([job.id for job in current_group])
         total_time += max_group_time
 
